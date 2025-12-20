@@ -5,6 +5,8 @@ final class MovieQuizViewController: UIViewController {
     @IBOutlet weak private var imageView: UIImageView!
     @IBOutlet weak private var textLabel: UILabel!
     @IBOutlet weak private var counterLabel: UILabel!
+    @IBOutlet weak private var yesButton: UIButton!
+    @IBOutlet weak private var noButton: UIButton!
     
     private struct QuizQuestion {
         let image: String
@@ -57,6 +59,7 @@ final class MovieQuizViewController: UIViewController {
     
     private var currentQuestionIndex = 0
     private var correctAnswers = 0
+    private var answerButtons: [UIButton] { [yesButton, noButton] }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -76,6 +79,10 @@ final class MovieQuizViewController: UIViewController {
         imageView.image = step.image
         textLabel.text = step.question
         counterLabel.text = step.questionNumber
+    }
+    
+    private func setButtonsEnabled(_ enabled: Bool){
+        answerButtons.forEach { $0.isEnabled = enabled }
     }
     
     private func showAnswerResult(isCorrect: Bool){
@@ -102,12 +109,12 @@ final class MovieQuizViewController: UIViewController {
             show(quiz: viewModel)
         } else {
             currentQuestionIndex += 1
-            
             let nextQuestion = questions[currentQuestionIndex]
             let viewModel = convert(model: nextQuestion)
             show(quiz: viewModel)
         }
         imageView.layer.borderWidth = 0
+        setButtonsEnabled(true)
     }
     
     private func show(quiz result: QuizResultViewModel){
@@ -116,28 +123,29 @@ final class MovieQuizViewController: UIViewController {
             message: result.text,
             preferredStyle: .alert)
         
-        let action = UIAlertAction(title: result.buttonText, style: .default) {_ in
+        let action = UIAlertAction(title: result.buttonText, style: .default) { [weak self] _ in
+            guard let self = self else {return}
             self.currentQuestionIndex = 0
             self.correctAnswers = 0
             let firstQuestion = self.questions[self.currentQuestionIndex]
             let viewModel = self.convert(model: firstQuestion)
             self.show(quiz: viewModel)
         }
-        
         alert.addAction(action)
-        
         self.present(alert, animated: true, completion: nil)
     }
     
-    @IBAction private func yesButtonClicked(_ sender: UIButton) {
+    private func buttonClicked (_ givenAnswer: Bool) {
+        setButtonsEnabled(false)
         let currentQuestion = questions[currentQuestionIndex]
-        let givenAnswer = true
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
+    
+    @IBAction private func yesButtonClicked(_ sender: UIButton) {
+        buttonClicked(true)
+    }
     @IBAction private func noButtonClicked(_ sender: UIButton) {
-        let currentQuestion = questions[currentQuestionIndex]
-        let givenAnswer = false
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        buttonClicked(false)
     }
 }
 
