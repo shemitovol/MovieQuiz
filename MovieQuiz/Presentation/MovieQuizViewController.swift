@@ -12,7 +12,7 @@ final class MovieQuizViewController: UIViewController {
     private var correctAnswers = 0
     private var answerButtons: [UIButton] { [yesButton, noButton] }
     private var questionsAmount: Int = 10
-    private var questionFactory: QuestionFactory = QuestionFactory()
+    private var questionFactory: QuestionFactoryProtocol = QuestionFactory()
     private var currentQuestion: QuizQuestion?
     
     override func viewDidLoad() {
