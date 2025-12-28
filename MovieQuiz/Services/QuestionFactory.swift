@@ -1,10 +1,3 @@
-//
-//  QuestionFactory.swift
-//  MovieQuiz
-//
-//  Created by Олег Сергеевич on 25.12.2025.
-//
-
 import Foundation
 
 class QuestionFactory: QuestionFactoryProtocol {
