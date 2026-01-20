@@ -1,6 +1,6 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController {
+final class MovieQuizViewController: UIViewController, MovieQuizViewControllerProtocol {
     // MARK: - Lifecycle
     @IBOutlet weak private var imageView: UIImageView!
     @IBOutlet weak private var textLabel: UILabel!
@@ -25,7 +25,7 @@ final class MovieQuizViewController: UIViewController {
         counterLabel.text = step.questionNumber
     }
     
-    func show(quiz result: QuizResultViewModel){
+    func show(quiz result: QuizResultsViewModel){
         let message = presenter.messageToAlert()
         let model = AlertModel(title: result.title, message: message, buttonText: result.buttonText) { [weak self] in
             guard let self = self else {return}

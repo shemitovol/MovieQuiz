@@ -5,12 +5,12 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     private let questionsAmount = 10
     private var currentQuestionIndex = 0
     private var currentQuestion: QuizQuestion?
-    private weak var viewController: MovieQuizViewController?
+    private weak var viewController: MovieQuizViewControllerProtocol?
     private var correctAnswers: Int = 0
     private var statisticService: StatisticServiceProtocol = StatisticService()
     private var questionFactory: QuestionFactoryProtocol?
     
-    init(viewController: MovieQuizViewController){
+    init(viewController: MovieQuizViewControllerProtocol){
         self.viewController = viewController
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         questionFactory?.loadData()
@@ -56,7 +56,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     private func proceedToNextQuestionOrResult() {
         if self.isLastQuestion() {
             statisticService.store(correct: correctAnswers, total: self.questionsAmount)
-            let viewModel = QuizResultViewModel(
+            let viewModel = QuizResultsViewModel(
                 title: "Этот раунд окончен!",
                 text: "",
                 buttonText: "Сыграть ещё раз"
@@ -89,15 +89,15 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         currentQuestionIndex == questionsAmount - 1
     }
     
-    private func convert(model: QuizQuestion) -> QuizStepViewModel {
+    // MARK: - Functions
+    
+    func convert(model: QuizQuestion) -> QuizStepViewModel {
         QuizStepViewModel(
             image: model.image,
             question: model.text,
             questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)"
         )
     }
-    
-    // MARK: - Functions
     
     func restartGame() {
         currentQuestionIndex = 0
